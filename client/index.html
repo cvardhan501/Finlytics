@@ -9,6 +9,9 @@
     <link rel="icon" type="image/png" href="assets/finlytics-logo.png" />
     <link rel="stylesheet" href="expense-tracker.css" />
 
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#6366f1" />
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
@@ -340,5 +343,10 @@
     <div id="toastBox"></div>
 
     <script src="expense-tracker.js"></script>
+    <script>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("/service-worker.js");
+      }
+</script>
   </body>
 </html>
