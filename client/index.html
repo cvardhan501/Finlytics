@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Finlytics</title>
+
+    <link rel="icon" type="image/png" href="assets/finlytics-logo.png" />
+    <link rel="stylesheet" href="expense-tracker.css" />
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+  </head>
+
+  <body>
+    <!-- Splash Screen -->
+    <div id="splashScreen" class="splash-screen">
+      <img
+        src="assets/finlytics-logo.png"
+        class="splash-logo"
+        alt="Finlytics Logo"
+      />
+      <h1>Finlytics</h1>
+      <p>Understand Your Money Better.</p>
+    </div>
+
+    <!-- Login/Register -->
+    <div id="loginScreen" class="login-screen">
+      <div class="login-card">
+        <img
+          src="assets/finlytics-logo.png"
+          class="login-logo"
+          alt="Finlytics Logo"
+        />
+
+        <h1>Finlytics</h1>
+        <p id="authTitle">Understand Your Money Better.</p>
+
+        <input id="loginName" type="text" placeholder="Username" />
+        <input id="loginPassword" type="password" placeholder="Password" />
+
+        <label class="show-pass">
+          <input type="checkbox" onclick="togglePassword()" />
+          Show Password
+        </label>
+
+        <button onclick="loginUser()" class="primary-btn" id="authBtn">
+          Login
+        </button>
+
+        <p class="switch-auth">
+          <span id="switchText">Don't have an account?</span>
+          <b onclick="toggleAuth()">Register</b>
+        </p>
+      </div>
+    </div>
+
+    <div class="bg-shape shape1"></div>
+    <div class="bg-shape shape2"></div>
+
+    <div class="dashboard">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="brand">
+          <img
+            src="assets/finlytics-logo.png"
+            class="sidebar-logo"
+            alt="logo"
+          />
+          <div>
+            <h2>Finlytics</h2>
+            <small>Understand Money Better</small>
+          </div>
+        </div>
+
+        <a class="active" onclick="goToSection('dashboardSection')"
+          >🏠 Dashboard</a
+        >
+        <a onclick="goToSection('budgetSection')">🎯 Budget</a>
+        <a onclick="goToSection('insightsSection')">🧠 Insights</a>
+        <a onclick="goToSection('transactionsSection')">💳 Transactions</a>
+        <a onclick="goToSection('graphsSection')">📈 Graphs</a>
+        <a onclick="logoutUser()">🚪 Logout</a>
+      </aside>
+
+      <!-- Main -->
+      <main class="main">
+        <header class="topbar">
+          <div>
+            <h1>Finlytics</h1>
+            <p>
+              Track expenses, analyze budgets, and improve your savings with
+              smart insights.
+            </p>
+            <h4 id="welcomeUser">Hello, User 👋</h4>
+          </div>
+
+          <button onclick="toggleTheme()" id="themeBtn">🌙</button>
+        </header>
+
+        <!-- Summary Cards -->
+        <section class="stats" id="dashboardSection">
+          <div class="stat-card">
+            <span>💰</span>
+            <p>Total Income</p>
+            <h2 class="income">₹<span id="income">0</span></h2>
+          </div>
+
+          <div class="stat-card">
+            <span>💸</span>
+            <p>Total Expense</p>
+            <h2 class="expense">₹<span id="expense">0</span></h2>
+          </div>
+
+          <div class="stat-card">
+            <span>📅</span>
+            <p>Today Expense</p>
+            <h2 class="expense">₹<span id="todayExpense">0</span></h2>
+          </div>
+
+          <div class="stat-card">
+            <span>🏦</span>
+            <p>Balance</p>
+            <h2 class="balance">₹<span id="balance">0</span></h2>
+          </div>
+        </section>
+
+        <!-- Add Transaction + Budget -->
+        <section class="grid">
+          <div class="panel">
+            <h3>➕ Add Transaction</h3>
+
+            <input id="title" type="text" placeholder="Transaction title" />
+            <input id="amount" type="number" placeholder="Amount" />
+
+            <div class="type-toggle">
+              <label>
+                <input type="radio" name="type" value="expense" checked />
+                <span>Expense</span>
+              </label>
+
+              <label>
+                <input type="radio" name="type" value="income" />
+                <span>Income</span>
+              </label>
+            </div>
+
+            <select id="category">
+              <option value="Food">🍔 Food</option>
+              <option value="Travel">✈️ Travel</option>
+              <option value="Shopping">🛍 Shopping</option>
+              <option value="Bills">🧾 Bills</option>
+              <option value="Salary">💼 Salary</option>
+              <option value="Other">📌 Other</option>
+            </select>
+            <div class="date-options">
+              <label>
+                <input
+                  type="radio"
+                  name="dateMode"
+                  value="auto"
+                  checked
+                  onchange="toggleDateMode()"
+                />
+                Auto Date
+              </label>
+
+              <label>
+                <input
+                  type="radio"
+                  name="dateMode"
+                  value="manual"
+                  onchange="toggleDateMode()"
+                />
+                Manual Date
+              </label>
+            </div>
+
+            <input id="date" type="date" style="display: none" />
+
+            <button onclick="addTransaction()" class="primary-btn">
+              Add Transaction
+            </button>
+          </div>
+
+          <div class="panel" id="budgetSection">
+            <h3>🎯 Monthly Budget</h3>
+
+            <input
+              id="budgetInput"
+              type="number"
+              placeholder="Set monthly budget"
+            />
+            <button onclick="setBudget()" class="primary-btn">
+              Set Budget
+            </button>
+
+            <div class="progress">
+              <div id="progressBar"></div>
+            </div>
+
+            <p id="budgetStatus">No budget set yet.</p>
+
+            <div class="divider"></div>
+
+            <h3>💎 Savings Goal</h3>
+
+            <input
+              id="savingsGoalInput"
+              type="number"
+              placeholder="Set savings goal"
+            />
+            <button onclick="setSavingsGoal()" class="primary-btn">
+              Set Savings Goal
+            </button>
+
+            <div class="progress">
+              <div id="savingsProgressBar"></div>
+            </div>
+
+            <p id="savingsStatus">No savings goal set yet.</p>
+          </div>
+        </section>
+
+        <!-- Insights -->
+        <section class="panel" id="insightsSection">
+          <h3>🧠 Smart Budget Insights</h3>
+          <div id="insightBox"></div>
+        </section>
+
+        <!-- Transactions -->
+        <section class="panel" id="transactionsSection">
+          <div class="table-head">
+            <h3>Recent Transactions</h3>
+
+            <div class="filters">
+              <input
+                id="searchInput"
+                type="text"
+                placeholder="Search transaction..."
+                oninput="loadData()"
+              />
+
+              <select id="filterType" onchange="loadData()">
+                <option value="all">All</option>
+                <option value="income">Income</option>
+                <option value="expense">Expense</option>
+              </select>
+
+              <select id="categoryFilter" onchange="loadData()">
+                <option value="all">All Categories</option>
+                <option value="Food">Food</option>
+                <option value="Travel">Travel</option>
+                <option value="Shopping">Shopping</option>
+                <option value="Bills">Bills</option>
+                <option value="Salary">Salary</option>
+                <option value="Other">Other</option>
+              </select>
+
+              <select id="dateFilter" onchange="loadData()">
+                <option value="all">All Time</option>
+                <option value="weekly">This Week</option>
+                <option value="monthly">This Month</option>
+              </select>
+
+              <button onclick="printReport()" class="print-btn">
+                🖨 Print
+              </button>
+              <button onclick="confirmClearAll()" class="clear-btn">
+                Clear All
+              </button>
+            </div>
+          </div>
+
+          <div class="table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Category</th>
+                  <th>Type</th>
+                  <th>Date</th>
+                  <th>Amount</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+
+              <tbody id="list"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Graphs -->
+        <section class="grid" id="graphsSection">
+          <div class="panel chart-panel">
+            <div class="chart-head">
+              <h3>📈 Income vs Expense</h3>
+
+              <select id="graphFilter" onchange="renderCharts()">
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+              </select>
+            </div>
+
+            <canvas id="summaryChart"></canvas>
+          </div>
+
+          <div class="panel chart-panel">
+            <h3>📊 Category Spending</h3>
+            <canvas id="expenseChart"></canvas>
+          </div>
+
+          <div class="panel chart-panel">
+            <h3>📊 Monthly Trend</h3>
+            <canvas id="monthlyChart"></canvas>
+          </div>
+
+          <div class="panel chart-panel">
+            <h3>🥧 Category Pie Chart</h3>
+            <canvas id="pieChart"></canvas>
+          </div>
+        </section>
+
+        <footer>
+          <p>© 2026 Finlytics</p>
+          <p>Understand Your Money Better.</p>
+          <p>Designed & Developed by <strong>C Vishnu Vardhan</strong> ❤️</p>
+        </footer>
+      </main>
+    </div>
+
+    <div id="toastBox"></div>
+
+    <script src="expense-tracker.js"></script>
+  </body>
+</html>
