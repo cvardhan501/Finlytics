@@ -893,44 +893,51 @@ function getReportDataByChoice() {
   return data;
 }
 
+
+
 // function printReport() {
-//   if (allTransactions.length === 0) {
+//   const filteredData = applyPageFilters(allTransactions);
+
+//   if (filteredData.length === 0) {
 //     showToast("No transactions to print", "warning");
 //     return;
 //   }
 
-//   const reportData = getReportDataByChoice();
-
-//   if (reportData.length === 0) {
-//     showToast("No transactions found for selected report filter", "warning");
-//     return;
-//   }
-
-//   const includeToday = confirm(
-//     "Do you want to include Today Expense in the report?\n\nOK = Include\nCancel = Hide"
-//   );
-
 //   const userName = localStorage.getItem("expenseUserName") || "User";
 
-//   const income = reportData
+//   // const income = filteredData
+//   //   .filter((item) => item.type === "income")
+//   //   .reduce((sum, item) => sum + Number(item.amount), 0);
+
+//   // const expense = filteredData
+//   //   .filter((item) => item.type === "expense")
+//   //   .reduce((sum, item) => sum + Number(item.amount), 0);
+
+//   // const balance = income - expense;
+
+//   // 🔥 ALWAYS calculate from ALL transactions
+//   // 🔒 Income always full data
+//   const income = allTransactions
 //     .filter((item) => item.type === "income")
 //     .reduce((sum, item) => sum + Number(item.amount), 0);
 
-//   const expense = reportData
+//   // 🔄 Expense based on filter
+//   const expense = filteredData
 //     .filter((item) => item.type === "expense")
 //     .reduce((sum, item) => sum + Number(item.amount), 0);
 
+//   // 🔄 Balance based on filtered expense
 //   const balance = income - expense;
 
 //   const today = new Date().toISOString().split("T")[0];
 
-//   const todayExpense = reportData
+//   // 🔥 Always calculate today expense from ALL data
+//   const todayExpense = allTransactions
 //     .filter((item) => item.type === "expense" && item.date === today)
 //     .reduce((sum, item) => sum + Number(item.amount), 0);
-
 //   let rows = "";
 
-//   reportData.forEach((item) => {
+//   filteredData.forEach((item) => {
 //     const isIncome = item.type === "income";
 //     const color = isIncome ? "#16a34a" : "#dc2626";
 //     const sign = isIncome ? "+" : "-";
@@ -950,21 +957,15 @@ function getReportDataByChoice() {
 //     `;
 //   });
 
-//   const todayCard = includeToday
-//     ? `
-//       <div class="summary-card today">
-//         <h4>Today Expense</h4>
-//         <h2>₹${todayExpense}</h2>
-//       </div>
-//     `
-//     : "";
+//   const logoURL = new URL("assets/finlytics-logo.png", window.location.href)
+//     .href;
 
 //   const reportWindow = window.open("", "", "width=1100,height=800");
 
 //   reportWindow.document.write(`
 //     <html>
 //     <head>
-//       <title>Finlytics Expense Report</title>
+//       <title>Finlytics Report</title>
 
 //       <style>
 //         * {
@@ -988,102 +989,98 @@ function getReportDataByChoice() {
 //           box-shadow: 0 10px 35px rgba(15, 23, 42, 0.12);
 //         }
 
-//         .header {
+//         .report-header {
 //           display: flex;
-//           justify-content: space-between;
-//           align-items: flex-start;
-//           border-bottom: 2px dashed #cbd5e1;
-//           padding-bottom: 20px;
-//           margin-bottom: 25px;
-//         }
-
-//         .brand {
-//           display: flex;
-//           gap: 15px;
 //           align-items: center;
+//           gap: 16px;
+//           border-bottom: 2px dashed #cbd5e1;
+//           padding-bottom: 18px;
+//           margin-bottom: 22px;
 //         }
 
 //         .logo {
-//           width: 70px;
-//           height: 70px;
-//           border-radius: 18px;
+//           width: 76px;
+//           height: 76px;
 //           object-fit: contain;
+//           border-radius: 16px;
 //         }
 
-//         .brand h1 {
+//         .report-header h1 {
 //           margin: 0;
-//           font-size: 34px;
 //           color: #0284c7;
+//           font-size: 36px;
 //         }
 
-//         .brand p {
-//           margin: 4px 0;
+//         .report-header p {
+//           margin: 5px 0 0;
 //           color: #475569;
+//           font-size: 15px;
 //         }
 
-//         .report-title {
-//           text-align: right;
+//         .top {
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: flex-start;
+//           margin-bottom: 24px;
 //         }
 
-//         .report-title h2 {
-//           margin: 0 0 12px;
-//           font-size: 24px;
+//         .top h3 {
+//           margin: 0;
 //           color: #0f172a;
 //         }
 
-//         .report-title p {
-//           margin: 6px 0;
+//         .top p {
+//           margin: 5px 0;
 //           color: #475569;
-//           font-size: 14px;
 //         }
 
 //         .summary {
 //           display: grid;
-//           grid-template-columns: repeat(${includeToday ? 4 : 3}, 1fr);
-//           gap: 16px;
-//           margin: 25px 0;
+//           grid-template-columns: repeat(4, 1fr);
+//           gap: 14px;
+//           margin-bottom: 26px;
 //         }
 
-//         .summary-card {
+//         .card {
 //           border: 1px solid #cbd5e1;
-//           padding: 18px;
-//           border-radius: 16px;
+//           padding: 16px;
 //           text-align: center;
+//           border-radius: 14px;
 //           background: #ffffff;
 //         }
 
-//         .summary-card h4 {
-//           margin: 0 0 10px;
+//         .card b {
+//           display: block;
+//           margin-bottom: 8px;
 //           color: #475569;
-//           font-size: 14px;
+//           font-size: 13px;
 //           text-transform: uppercase;
 //         }
 
-//         .summary-card h2 {
-//           margin: 0;
-//           font-size: 26px;
+//         .card span {
+//           font-size: 24px;
+//           font-weight: 800;
 //         }
 
-//         .income h2 {
+//         .income-card span {
 //           color: #16a34a;
 //         }
 
-//         .expense h2 {
+//         .expense-card span {
 //           color: #dc2626;
 //         }
 
-//         .today h2 {
+//         .today-card span {
 //           color: #0284c7;
 //         }
 
-//         .balance h2 {
+//         .balance-card span {
 //           color: #7c3aed;
 //         }
 
 //         .section-title {
-//           margin-top: 30px;
-//           margin-bottom: 12px;
-//           font-size: 20px;
+//           margin: 8px 0 14px;
+//           font-size: 21px;
 //           color: #0f172a;
 //         }
 
@@ -1103,8 +1100,8 @@ function getReportDataByChoice() {
 //         }
 
 //         td {
-//           border-bottom: 1px solid #e2e8f0;
 //           padding: 13px;
+//           border-bottom: 1px solid #e2e8f0;
 //           font-size: 14px;
 //         }
 
@@ -1119,8 +1116,8 @@ function getReportDataByChoice() {
 //         }
 
 //         .footer {
-//           margin-top: 35px;
-//           padding-top: 20px;
+//           margin-top: 32px;
+//           padding-top: 18px;
 //           border-top: 2px dashed #cbd5e1;
 //           display: flex;
 //           justify-content: space-between;
@@ -1132,6 +1129,7 @@ function getReportDataByChoice() {
 //           font-size: 20px;
 //           font-family: cursive;
 //           color: #0f172a;
+//           margin: 0;
 //         }
 
 //         .developer {
@@ -1146,6 +1144,7 @@ function getReportDataByChoice() {
 //           }
 
 //           .report {
+//             max-width: none;
 //             box-shadow: none;
 //             border-radius: 0;
 //           }
@@ -1156,39 +1155,46 @@ function getReportDataByChoice() {
 //     <body>
 //       <div class="report">
 
-//         <div class="header">
-//           <div class="brand">
-//             <img src="assets/finlytics-logo.png" class="logo" />
-//             <div>
-//               <h1>Finlytics</h1>
-//               <p><strong>Expense Tracker</strong></p>
-//               <p>Understand Your Money Better.</p>
-//             </div>
+//         <div class="report-header">
+//           <img src="${logoURL}" class="logo" alt="Finlytics Logo" />
+//           <div>
+//             <h1>Finlytics</h1>
+//             <p><strong>Expense Tracker</strong></p>
+//             <p>Understand Your Money Better.</p>
+//           </div>
+//         </div>
+
+//         <div class="top">
+//           <div>
+//             <h3>User Name: ${userName}</h3>
+//             <p>Report generated from current selected filters</p>
 //           </div>
 
-//           <div class="report-title">
-//             <h2>EXPENSE REPORT</h2>
-//             <p><strong>User Name:</strong> ${userName}</p>
-//             <p><strong>Generated On:</strong> ${new Date().toLocaleString()}</p>
+//           <div>
+//             <p><strong>Generated On:</strong></p>
+//             <p>${new Date().toLocaleString()}</p>
 //           </div>
 //         </div>
 
 //         <div class="summary">
-//           <div class="summary-card income">
-//             <h4>Total Income</h4>
-//             <h2>₹${income}</h2>
+//           <div class="card income-card">
+//             <b>Total Income</b>
+//             <span>₹${income}</span>
 //           </div>
 
-//           <div class="summary-card expense">
-//             <h4>Total Expense</h4>
-//             <h2>₹${expense}</h2>
+//           <div class="card expense-card">
+//             <b>Total Expense</b>
+//             <span>₹${expense}</span>
 //           </div>
 
-//           ${todayCard}
+//           <div class="card today-card">
+//             <b>Today Expense</b>
+//             <span>₹${todayExpense}</span>
+//           </div>
 
-//           <div class="summary-card balance">
-//             <h4>Balance</h4>
-//             <h2>₹${balance}</h2>
+//           <div class="card balance-card">
+//             <b>Balance</b>
+//             <span>₹${balance}</span>
 //           </div>
 //         </div>
 
@@ -1211,7 +1217,7 @@ function getReportDataByChoice() {
 //         </table>
 
 //         <p class="note">
-//           * This report is generated from selected Finlytics data.
+//           * This report is generated from the transactions currently visible after applying filters in Finlytics.
 //         </p>
 
 //         <div class="footer">
@@ -1236,171 +1242,7 @@ function getReportDataByChoice() {
 
 //   setTimeout(() => {
 //     reportWindow.print();
-//   }, 500);
-// }
-
-// function printReport() {
-//   const filteredData = applyPageFilters(allTransactions);
-
-//   if (filteredData.length === 0) {
-//     showToast("No transactions to print", "warning");
-//     return;
-//   }
-
-//   const userName = localStorage.getItem("expenseUserName") || "User";
-
-//   // totals based on filtered data
-//   const income = filteredData
-//     .filter(item => item.type === "income")
-//     .reduce((sum, item) => sum + Number(item.amount), 0);
-
-//   const expense = filteredData
-//     .filter(item => item.type === "expense")
-//     .reduce((sum, item) => sum + Number(item.amount), 0);
-
-//   const balance = income - expense;
-
-//   const today = new Date().toISOString().split("T")[0];
-
-//   const todayExpense = filteredData
-//     .filter(item => item.type === "expense" && item.date === today)
-//     .reduce((sum, item) => sum + Number(item.amount), 0);
-
-//   let rows = "";
-
-//   filteredData.forEach(item => {
-//     const isIncome = item.type === "income";
-//     const color = isIncome ? "#16a34a" : "#dc2626";
-//     const sign = isIncome ? "+" : "-";
-
-//     rows += `
-//       <tr>
-//         <td>${item.date}</td>
-//         <td>${item.title}</td>
-//         <td>${item.category}</td>
-//         <td style="color:${color}; font-weight:700;">${item.type}</td>
-//         <td style="color:${color}; font-weight:700;">
-//           ${sign} ₹${item.amount}
-//         </td>
-//       </tr>
-//     `;
-//   });
-//   const logoURL = new URL("assets/finlytics-logo.png", window.location.href).href;
-
-//   const reportWindow = window.open("", "", "width=1100,height=800");
-
-//   (`
-//     <html>
-//     <head>
-//       <title>Finlytics Report</title>
-//       <streportWindow.document.writeyle>
-//         body {
-//           font-family: Arial;
-//           padding: 30px;
-//           background: #f8fafc;
-//         }
-
-//         .report {
-//           background: white;
-//           padding: 30px;
-//           border-radius: 16px;
-//         }
-
-//         h1 { color: #0284c7; }
-//         h2 { margin-bottom: 5px; }
-
-//         .top {
-//           display: flex;
-//           justify-content: space-between;
-//           margin-bottom: 20px;
-//         }
-
-//         .summary {
-//           display: grid;
-//           grid-template-columns: repeat(4,1fr);
-//           gap: 10px;
-//           margin-bottom: 20px;
-//         }
-
-//         .card {
-//           border: 1px solid #ddd;
-//           padding: 12px;
-//           text-align: center;
-//           border-radius: 10px;
-//         }
-
-//         table {
-//           width: 100%;
-//           border-collapse: collapse;
-//         }
-
-//         th {
-//           background: #6366f1;
-//           color: white;
-//           padding: 10px;
-//         }
-
-//         td {
-//           padding: 10px;
-//           border-bottom: 1px solid #ddd;
-//         }
-
-//         .footer {
-//           margin-top: 20px;
-//           text-align: center;
-//           color: #555;
-//         }
-//       </streportWindow.document.writeyle>
-//     </head>
-
-//     <body>
-//       <div class="report">
-
-//         <h1>Finlytics</h1>
-//         <p>Understand Your Money Better</p>
-
-//         <div class="top">
-//           <div>
-//             <h3>User: ${userName}</h3>
-//           </div>
-//           <div>
-//             <p>${new Date().toLocaleString()}</p>
-//           </div>
-//         </div>
-
-//         <div class="summary">
-//           <div class="card"><b>Income</b><br>₹${income}</div>
-//           <div class="card"><b>Expense</b><br>₹${expense}</div>
-//           <div class="card"><b>Today</b><br>₹${todayExpense}</div>
-//           <div class="card"><b>Balance</b><br>₹${balance}</div>
-//         </div>
-
-//         <table>
-//           <thead>
-//             <tr>
-//               <th>Date</th>
-//               <th>Title</th>
-//               <th>Category</th>
-//               <th>Type</th>
-//               <th>Amount</th>
-//             </tr>
-//           </thead>
-//           <tbody>
-//             ${rows}
-//           </tbody>
-//         </table>
-
-//         <div class="footer">
-//           <p>Designed & Developed by C Vishnu Vardhan ❤️</p>
-//         </div>
-
-//       </div>
-//     </body>
-//     </html>
-//   `);
-
-//   reportWindow.document.close();
-//   reportWindow.print();
+//   }, 600);
 // }
 
 function printReport() {
@@ -1413,36 +1255,30 @@ function printReport() {
 
   const userName = localStorage.getItem("expenseUserName") || "User";
 
-  // const income = filteredData
-  //   .filter((item) => item.type === "income")
-  //   .reduce((sum, item) => sum + Number(item.amount), 0);
-
-  // const expense = filteredData
-  //   .filter((item) => item.type === "expense")
-  //   .reduce((sum, item) => sum + Number(item.amount), 0);
-
-  // const balance = income - expense;
-
-  // 🔥 ALWAYS calculate from ALL transactions
-  // 🔒 Income always full data
+  // Income always from all data
   const income = allTransactions
     .filter((item) => item.type === "income")
     .reduce((sum, item) => sum + Number(item.amount), 0);
 
-  // 🔄 Expense based on filter
+  // Balance always from all data
+  const totalExpense = allTransactions
+    .filter((item) => item.type === "expense")
+    .reduce((sum, item) => sum + Number(item.amount), 0);
+
+  const balance = income - totalExpense;
+
+  // Total Expense card changes according to current filter
   const expense = filteredData
     .filter((item) => item.type === "expense")
     .reduce((sum, item) => sum + Number(item.amount), 0);
 
-  // 🔄 Balance based on filtered expense
-  const balance = income - expense;
-
+  // Today Expense always from all data
   const today = new Date().toISOString().split("T")[0];
 
-  // 🔥 Always calculate today expense from ALL data
   const todayExpense = allTransactions
     .filter((item) => item.type === "expense" && item.date === today)
     .reduce((sum, item) => sum + Number(item.amount), 0);
+
   let rows = "";
 
   filteredData.forEach((item) => {
@@ -1474,7 +1310,6 @@ function printReport() {
     <html>
     <head>
       <title>Finlytics Report</title>
-
       <style>
         * {
           box-sizing: border-box;
@@ -1595,8 +1430,6 @@ function printReport() {
         table {
           width: 100%;
           border-collapse: collapse;
-          overflow: hidden;
-          border-radius: 14px;
         }
 
         th {
@@ -1662,7 +1495,6 @@ function printReport() {
 
     <body>
       <div class="report">
-
         <div class="report-header">
           <img src="${logoURL}" class="logo" alt="Finlytics Logo" />
           <div>
@@ -1718,7 +1550,6 @@ function printReport() {
               <th>Amount</th>
             </tr>
           </thead>
-
           <tbody>
             ${rows}
           </tbody>
@@ -1739,7 +1570,6 @@ function printReport() {
             <p>Designed & Developed by C Vishnu Vardhan ❤️</p>
           </div>
         </div>
-
       </div>
     </body>
     </html>
@@ -1752,6 +1582,7 @@ function printReport() {
     reportWindow.print();
   }, 600);
 }
+
 
 function downloadPDF() {
   if (allTransactions.length === 0) {
